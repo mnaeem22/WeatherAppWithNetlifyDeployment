@@ -1,6 +1,7 @@
 [build]
-  # For a purely serverless Flask-backed app, we do not need a heavy build step.
-  # This command is a no-op placeholder to keep Netlify's build happy.
+  # Use Python 3.11 so Netlify's build image installs the correct version
+  environment = { PYTHON_VERSION = "3.11" }
+  # No heavy build step; keeps Netlify's build happy
   command = "echo 'No build step required for Python/Flask app'"
   publish = "."
   functions = "netlify/functions"
