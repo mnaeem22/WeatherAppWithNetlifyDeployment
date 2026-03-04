@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>MN Weather Application</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+</head>
+<body>
+    <div class="app-container">
+        <header class="app-header">
+            <h1>Weather Application</h1>
+            <p class="subtitle">Check the current weather for any city.</p>
+        </header>
+
+        <main class="app-main">
+            <section class="card search-card">
+                <form id="weather-form" autocomplete="off">
+                    <label for="city" class="form-label">Enter city name</label>
+                    <div class="input-row">
+                        <input
+                            type="text"
+                            id="city"
+                            name="city"
+                            placeholder="e.g., London"
+                            required
+                            aria-required="true"
+                        />
+                        <button type="submit" id="search-button">Get Weather</button>
+                    </div>
+                </form>
+                <p id="error-message" class="error-message" aria-live="polite"></p>
+            </section>
+
+            <section id="result-section" class="card result-card hidden" aria-live="polite">
+                <h2 id="result-city"></h2>
+                <p class="result-temp">
+                    <span id="result-temperature"></span>
+                    <span class="temp-unit">°C</span>
+                </p>
+                <p id="result-description" class="result-description"></p>
+                <div class="result-meta">
+                    <div class="meta-item">
+                        <span class="meta-label">Humidity</span>
+                        <span id="result-humidity" class="meta-value"></span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">Wind Speed</span>
+                        <span id="result-wind" class="meta-value"></span>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="app-footer">
+            <p>
+                Powered by
+                <a href="https://openweathermap.org/api" target="_blank" rel="noopener noreferrer">
+                    OpenWeatherMap
+                </a>
+            </p>
+            <p class="copyright">
+                © 2026 Muhammad Naeem. All Rights Reserved.<br>
+                MN Weather Application is a personal project developed for educational and portfolio purposes.
+                Unauthorized copying, modification, distribution, or use of this software without
+                permission is prohibited.
+            </p>
+        </footer>
+    </div>
+
+    <script>
+        (function () {
+            const form = document.getElementById("weather-form");
+            const cityInput = document.getElementById("city");
+            const errorMessage = document.getElementById("error-message");
+
+            const resultSection = document.getElementById("result-section");
+            const resultCity = document.getElementById("result-city");
+            const resultTemperature = document.getElementById("result-temperature");
+            const resultDescription = document.getElementById("result-description");
+            const resultHumidity = document.getElementById("result-humidity");
+            const resultWind = document.getElementById("result-wind");
+
+            function clearResults() {
+                resultSection.classList.add("hidden");
+                resultCity.textContent = "";
+                resultTemperature.textContent = "";
+                resultDescription.textContent = "";
+                resultHumidity.textContent = "";
+                resultWind.textContent = "";
+            }
+
+            function showError(message) {
+                errorMessage.textContent = message;
+                errorMessage.style.display = message ? "block" : "none";
+            }
+
+            function showResult(data) {
+                showError("");
+                resultCity.textContent = data.city;
+                resultTemperature.textContent = data.temperature.toFixed(1);
+                resultDescription.textContent = data.description;
+                resultHumidity.textContent = data.humidity + " %";
+                resultWind.textContent = data.wind_speed + " m/s";
+                resultSection.classList.remove("hidden");
+            }
+
+            form.addEventListener("submit", function (event) {
+                event.preventDefault();
+                clearResults();
+                const city = cityInput.value.trim();
+
+                if (!city) {
+                    showError("Please enter a city name.");
+                    return;
+                }
+
+                showError("Loading weather data...");
+                const url = "/api/weather?city=" + encodeURIComponent(city);
+
+                fetch(url, {
+                    method: "GET",
+                    headers: {
+                        "Accept": "application/json"
+                    }
+                })
+                    .then(function (response) {
+                        return response.json().then(function (json) {
+                            return { status: response.status, body: json };
+                        });
+                    })
+                    .then(function (result) {
+                        if (!result.body || !result.body.success) {
+                            const message =
+                                (result.body && result.body.error) ||
+                                "Failed to fetch weather data.";
+                            showError(message);
+                            return;
+                        }
+                        showResult(result.body.data);
+                    })
+                    .catch(function () {
+                        showError(
+                            "Unexpected error while contacting the weather service. Please try again."
+                        );
+                    });
+            });
+        })();
+    </script>
+</body>
+</html>

@@ -1,0 +1,26 @@
+[build]
+  # For a purely serverless Flask-backed app, we do not need a heavy build step.
+  # This command is a no-op placeholder to keep Netlify's build happy.
+  command = "echo 'No build step required for Python/Flask app'"
+  publish = "."
+  functions = "netlify/functions"
+
+# Route root requests to the HTML template
+[[redirects]]
+  from = "/"
+  to = "/templates/index.html"
+  status = 200
+
+# Map the REST API path to the Netlify Function in production
+[[redirects]]
+  from = "/api/weather"
+  to = "/.netlify/functions/weather"
+  status = 200
+  force = true
+
+# Optional: ensure clean URLs
+[[redirects]]
+  from = "/*"
+  to = "/templates/index.html"
+  status = 404
+
