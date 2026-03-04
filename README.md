@@ -55,3 +55,43 @@ static/
 netlify/
   functions/
     weather.py        # Netlify Python Function for weather API
+
+---
+
+### Deploy to Netlify
+
+1. **Sign in to Netlify**  
+   Go to [app.netlify.com](https://app.netlify.com) and log in (or sign up with GitHub).
+
+2. **Add a new site from Git**  
+   - Click **Add new site** → **Import an existing project**.  
+   - Choose **GitHub** and authorize Netlify if needed.  
+   - Select the repo: `mnaeem22/WeatherAppWithNetlifyDeployment` (or your repo name).  
+   - If your app lives in a subfolder (e.g. `weather-application`), set **Base directory** to that folder in the build settings.
+
+3. **Build settings**  
+   Netlify will use your `netlify.toml`. Confirm:
+   - **Build command:** (from `netlify.toml` or leave default).  
+   - **Publish directory:** `.` (or as in `netlify.toml`).  
+   - **Functions directory:** `netlify/functions`.
+
+4. **Environment variables**  
+   In the site: **Site settings** → **Environment variables** → **Add a variable** (or **Add from .env**):
+   - **Key:** `OPENWEATHER_API_KEY`  
+   - **Value:** your OpenWeatherMap API key  
+   - **Scopes:** All (or only Production/Deploy previews as you prefer).  
+
+   Save. Redeploy the site if it already ran without the key.
+
+5. **Deploy**  
+   Click **Deploy site**. Netlify will build and deploy. Your site URL will be something like `https://your-site-name.netlify.app`.
+
+6. **Check the app**  
+   - Open the site URL. You should see the weather app.  
+   - Search for a city; the **Weather** request goes to the Netlify function at `/api/weather`.  
+   - If the key was missing, you’ll see an error; add `OPENWEATHER_API_KEY` and redeploy.
+
+**If the repo root is not the app folder**  
+If your GitHub repo root is the parent of `weather-application` (e.g. `WeatherAppWithNetlifyDeployment` with a subfolder `weather-application`):
+- In Netlify build settings, set **Base directory** to `weather-application`.  
+- Then publish directory in `netlify.toml` is relative to that base, so `.` is correct.

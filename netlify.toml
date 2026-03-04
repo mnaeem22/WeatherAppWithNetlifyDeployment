@@ -18,9 +18,10 @@
   status = 200
   force = true
 
-# Optional: ensure clean URLs
-[[redirects]]
-  from = "/*"
-  to = "/templates/index.html"
-  status = 404
+# SPA-style fallback: only for 404s, show index (optional; remove if you add more pages)
+# [[redirects]]
+#   from = "/*"
+#   to = "/templates/index.html"
+#   status = 200
+#   conditions = {Role = ["not_found"]}
 
